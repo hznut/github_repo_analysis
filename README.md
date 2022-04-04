@@ -69,6 +69,8 @@ All the caller needs to do is keep calling the API (like every 5-10 seconds)
 with the URL http://localhost/repo-analysis/api/analysis?repo_url=<repo_url>
 until it returns data.
 
+![repo_analysis_arch.jpg](repo_analysis_arch.jpg)
+
 ### Why I chose this project ?
 1. It sort of aligns with the Dreamteam product. Vision is to gather metrics
 that can even give some loose idea about: 
