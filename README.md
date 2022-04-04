@@ -19,7 +19,7 @@ for any given github.com repo.
     on lines 15, 22, 39. Eg. If your port 80 isn't free then change 
     line 22 to something like `9000:80`
 * `make run`
-  * Note: it prints a lot of logs so better do it in a new shell.
+  * Note: It may take up to 5 mins the first time.
   * Wait for about a minute. The REST API is the last one to start.
 ```
 $ make run
