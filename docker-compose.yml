@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  db:
+    container_name: repo-analysis-db
+    image: mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: example
+    volumes:
+      - ./rest_api/schema.sql:/docker-entrypoint-initdb.d/dump.sql
+
+  db-admin-console:
+    container_name: repo-analysis-db-admin-console
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - "db"
+
+  rest-api:
+    container_name: repo-analysis-rest-api
+    build: ./rest_api/
+    ports:
+      - 80:80
+    depends_on:
+      - "db"
+    environment:
+      - CHECKOUT_ROOT_DIR
+      - DB_HOST
+      - DB_PORT
+      - DB_TYPE
+      - DB_USERNAME
+      - DB_PASSWORD
+      - DB_NAME
+
+  notebook:
+    container_name: repo-analysis-notebook
+    build: ./notebook/
+    depends_on:
+      - "rest-api"
+    ports:
+      - 8888:8888
+    environment:
+      - REST_API_URL
+      - JUPYTER_TOKEN=notoken

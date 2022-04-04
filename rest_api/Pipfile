@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"github3.py" = "*"
+GitPython = "*"
+sortedcontainers = "*"
+fastapi = "*"
+"uvicorn[standard]" = "*"
+mangum = "*"
+peewee = "*"
+pymysql = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
