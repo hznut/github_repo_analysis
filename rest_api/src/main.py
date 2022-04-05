@@ -20,7 +20,8 @@ app = FastAPI(
     # if not custom domain
     openapi_url=f"{BASE_PATH}/openapi.json",
     docs_url=f"{BASE_PATH}/docs",
-    redoc_url=f"{BASE_PATH}/redoc"
+    redoc_url=f"{BASE_PATH}/redoc",
+    on_startup=[repo_analyzer.repo_analyzer_init]
 )
 
 router = APIRouter()
@@ -80,9 +81,9 @@ async def analyze(req: CommitterAnalysisRequest) -> CommitterAnalysisRequestAck:
 
 @router.get("/analysis/{request_id}")
 def get_analysis(request: Request,
-                       request_id: str = Path(None,
-                                              description='Original request id (v4 UUID) sent with analyze request.')
-                       ) -> RepoAnalysisResult:
+                 request_id: str = Path(None,
+                                        description='Original request id (v4 UUID) sent with analyze request.')
+                 ) -> RepoAnalysisResult:
     """
     Checks and retrieves the result for your request.
     :param request:

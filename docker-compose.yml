@@ -26,6 +26,7 @@ services:
     depends_on:
       - "db"
     environment:
+      - environment
       - CHECKOUT_ROOT_DIR
       - DB_HOST
       - DB_PORT
@@ -33,6 +34,7 @@ services:
       - DB_USERNAME
       - DB_PASSWORD
       - DB_NAME
+      - CREATE_DB_TABLES
 
   notebook:
     container_name: repo-analysis-notebook

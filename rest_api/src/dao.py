@@ -1,7 +1,7 @@
 from config import log_format, log_level
 import logging
 from peewee import *
-from config import DB_NAME, DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_TYPE
+from config import DB_NAME, DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_TYPE, CREATE_DB_TABLES
 from typing import Dict, List, Optional, Any
 import sys
 from models import CommitterLoc, StatusEnum
@@ -354,14 +354,18 @@ def extract_commit_freq_stats(repo_url: str, repo: Repo, commits: List[Commit]) 
     return
 
 
-if DB_TYPE == "mariadb":
-    db.init(DB_NAME, host=DB_HOST, port=DB_PORT, user=DB_USERNAME, password=DB_PASSWORD)
-    logger.info(f"Initiated connection to MariaDB.")
-else:
-    db.connect(reuse_if_open=True)
-    logger.info(f"Connected to in-memory SQLite.")
-db.create_tables([Repo, Committer, CommitterStatsPerRepo, Requests, CommitsPerRepoPerAuthor])
-logger.info(f"DB connection {'closed' if db.is_closed() else 'open'}.")
+def init_dao():
+    if DB_TYPE == "mariadb":
+        db.init(DB_NAME, host=DB_HOST, port=DB_PORT, user=DB_USERNAME, password=DB_PASSWORD)
+        logger.info(f"Initiated connection to MariaDB.")
+    else:
+        db.connect(reuse_if_open=True)
+        logger.info(f"Connected to in-memory SQLite.")
+
+    if CREATE_DB_TABLES:
+        db.create_tables([Repo, Committer, CommitterStatsPerRepo, Requests, CommitsPerRepoPerAuthor])
+
+    logger.info(f"DB connection {'closed' if db.is_closed() else 'open'}.")
 
 
 

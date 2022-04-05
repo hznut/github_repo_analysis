@@ -30,4 +30,5 @@ function run_api {
   docker compose --env-file ./local.env up -d --build --wait --quiet-pull
   check_services
   print_urls
+  docker compose logs -f
 }

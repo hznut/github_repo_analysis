@@ -7,7 +7,7 @@ COPY ./Pipfile.lock /code/Pipfile.lock
 
 RUN pipenv lock -r > requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-COPY ./*.py /code/
+COPY ./src/*.py /code/
 COPY ./wait_for_db.sh /code/
 ARG DB_HOST
 CMD ["/code/wait_for_db.sh", "db", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]

@@ -17,7 +17,7 @@ from dateutil.relativedelta import relativedelta
 
 
 logging.basicConfig(format=log_format)
-logger = logging.getLogger("loc_analyzer")
+logger = logging.getLogger("repo_analyzer")
 logger.setLevel(log_level)
 
 pp = PrettyPrinter(sort_dicts=False)
@@ -191,4 +191,7 @@ async def process_requests():
         dao.save_request(req.request_id, req.repo_url)
         await analyze_repo(req.repo_url)
 
-asyncio.create_task(process_requests())
+
+async def repo_analyzer_init():
+    dao.init_dao()
+    asyncio.create_task(process_requests())
