@@ -101,25 +101,6 @@ def delete_db_tables():
     db.close()
 
 
-# def load_data():
-#     environ = Environ()
-#     table_name = environ['SITE_ENTITY_TABLE_NAME']
-#     dynamo_endpoint = environ['DYNAMO_ENDPOINT']
-#     path_to_data_dir = f"{os.path.dirname(os.path.realpath(__file__))}/../scripts/localdb/data/"
-#     data_files = [pos_json for pos_json in os.listdir(
-#         path_to_data_dir) if pos_json.endswith('.json')]
-#     for data_file in data_files:
-#         print(f"writing records in datafile \'{path_to_data_dir + data_file}\' to table \'{table_name}\'")
-#         try:
-#             table_data = json.load(open(path_to_data_dir + data_file))
-#             table_data[table_name] = table_data.pop('table_name')
-#             ddb = boto3.client('dynamodb', endpoint_url=dynamo_endpoint)
-#             ddb.batch_write_item(RequestItems=table_data)
-#         except ClientError as e:
-#             logging.exception(e)
-#             raise e
-
-
 def destroy_db():
     """
     In case of failure rerun after commenting out call to this method so that
