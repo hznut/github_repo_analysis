@@ -46,6 +46,7 @@ Jupyter Notebook: http://127.0.0.1:8888/lab?token=notoken
     * password=DB_PASSWORD in [local.env](local.env) file.
   * Jupyter Notebook: execute each cell to see how API works. Try some sample repos from [here](https://github.com/search?q=stars%3A%22%3E+100%22+size%3A%3C5000&type=Repositories&ref=advsearch&l=&l=).
   It can analyze any repo however the popular ones like Apache Kafka take 10+ minutes.
+  * For checking logs: `make logs` (Ctrl+C to exit tailing the logs.)
     
 ![nb_cell_click](docs/nb_cell_click.png)
 

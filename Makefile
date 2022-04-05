@@ -16,6 +16,9 @@ tests: api_venv
 run:
 	. ./run.sh && run_api
 
+logs:
+	. ./run.sh && api_logs
+
 stop:
 	. ./run.sh && cleanup
 
