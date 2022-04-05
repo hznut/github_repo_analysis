@@ -47,13 +47,13 @@ Jupyter Notebook: http://127.0.0.1:8888/lab?token=notoken
   * Jupyter Notebook: execute each cell to see how API works. Try some sample repos from [here](https://github.com/search?q=stars%3A%22%3E+100%22+size%3A%3C5000&type=Repositories&ref=advsearch&l=&l=).
   It can analyze any repo however the popular ones like Apache Kafka take 10+ minutes.
     
-![nb_cell_click](nb_cell_click.png)
+![nb_cell_click](docs/nb_cell_click.png)
 
-![nb_url](nb_url.png)
+![nb_url](docs/nb_url.png)
 
-![nb_loc](nb_loc.png)
+![nb_loc](docs/nb_loc.png)
 
-![nb_freq](nb_freq.png)
+![nb_freq](docs/nb_freq.png)
 
 ### Cleanup    
 * `make stop`  
@@ -69,15 +69,16 @@ All the caller needs to do is keep calling the API (like every 5-10 seconds)
 with the URL http://localhost/repo-analysis/api/analysis?repo_url=<repo_url>
 until it returns data.
 
-![repo_analysis_arch.jpg](repo_analysis_arch.jpg)
+![repo_analysis_arch.jpg](docs/repo_analysis_arch.jpg)
 
 ### Why I chose this project ?
 1. It sort of aligns with the Dreamteam product. Vision is to gather metrics
 that can even give some loose idea about: 
-   * Who's contributed most code to a project ?
-   * Who commits more consistently and frequently ?
-   * Whose PRs generally have less turn around time ?
+   * Who's contributed most code (in production) to a project ?
+   * Who commits more consistently and frequently ? (i.e. follows code commit best practices)
+   * Whose PRs generally have less turn around time ? (Gives a hint of the same as above.)
    * Who's most active in discussions ? This may not be most code contributor!
+   * Who generally gives most constructive PR feedback/comments ?  
 2. It demonstrates my experience with writing REST APIs.
 
 ### Limitations
@@ -90,16 +91,17 @@ that can even give some loose idea about:
    recomputed when more commits have happened on a repo.   
 
 ### TODOs for production readiness
-1. Add many more unit, api and integration tests.
-2. Add infrastructure-as-code for cloud based deployment eg. 
+1. Add many more unit, api and integration *tests*.
+2. Add *infrastructure-as-code* for cloud based deployment eg. 
    terraform logic, AWS CDK.
-3. Add monitoring and alerting.
-4. Add authentication to the REST API. All other security eg. for DB.
+3. Add *monitoring* and *alerting*.
+4. Add *authentication* to the REST API. All other security eg. for DB.
 5. Preferably create a HTML UI for visualization.
 6. Break the system down into more components to better scalability.
-  * Break out each kind of analysis (loc, commit frequency) into a 
+    * Break out each kind of analysis (loc, commit frequency) into a 
     separate pipeline.
-  * Most likely a queuing mechanism (like SQS) will be needed instead
+    * Most likely a queuing mechanism (like SQS) will be needed instead
   of an in-memory data structure.
-7. Break the code further into more classes. More modularization and 
+7. *Code refactoring* to break it further into more classes. More modularization and 
    organization needed.
+8. Add support for multiple environments like `dev`, `qa`, `pre-prod`, `prod`.   
