@@ -44,6 +44,7 @@ class RepoAnalysisRequest(BaseModel):
 
 
 class RepoAnalysisResult(BaseModel):
+    repo_url: str
     status: str
     loc_analysis: Dict[str, CommitterLoc] = dict()
     commit_freq_analysis: Dict[str, float] = dict()

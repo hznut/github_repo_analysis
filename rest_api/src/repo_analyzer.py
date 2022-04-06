@@ -1,4 +1,4 @@
-from github3 import login, GitHub
+from github3 import GitHub
 import github3
 from git import Repo, Commit, RefLog
 from git.cmd import Git
@@ -43,10 +43,12 @@ def extract_owner_repo(repo_url: str) -> (str, str):
     return groups[0], groups[1]
 
 
-def repo_exists(repo_url: str) -> bool:
+def repo_exists_on_github(repo_url: str) -> bool:
     owner, repo_name = extract_owner_repo(repo_url)
     try:
-        return anon_gh.repository(owner, repo_name) is not None
+        repo = anon_gh.repository(owner, repo_name)
+        logger.debug(f"repo_exists_on_github: {repo}")
+        return repo is not None
     except github3.exceptions.NotFoundError as ex:
         return False
     except Exception as ex:
@@ -133,7 +135,7 @@ def get_loc_analysis_by_repo(repo: dao.Repo) -> Optional[RepoAnalysisResult]:
     """
     if not repo or repo is None:
         return None
-    result = RepoAnalysisResult(status=repo.status)
+    result = RepoAnalysisResult(status=repo.status, repo_url=repo.repo_url)
     if repo.loc_facts_status == StatusEnum.done.name:
         query_results: List[Any] = dao.get_loc_analysis_for_repo(repo)
         for result_row in query_results:
@@ -156,8 +158,9 @@ def get_analysis_by_request_id(request_id: str) -> Optional[RepoAnalysisResult]:
 
 
 def get_analysis_by_repo_url(repo_url: str) -> Optional[RepoAnalysisResult]:
-    if repo_exists(repo_url):
+    if repo_exists_on_github(repo_url):
         repo, _ = dao.Repo.get_or_create(repo_url=repo_url)
+        logger.info(f"get_analysis_by_repo_url: repo.id={repo.id} {repo.status} {repo.loc_facts_status} {repo.commit_feq_facts_status}")
         if repo is None:
             return None
         return get_analysis_by_repo(repo)

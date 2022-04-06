@@ -358,8 +358,8 @@ def init_dao():
         db.init(DB_NAME, host=DB_HOST, port=DB_PORT, user=DB_USERNAME, password=DB_PASSWORD)
         logger.info(f"Initiated connection to MariaDB.")
     else:
-        db.connect(reuse_if_open=True)
         logger.info(f"Connected to in-memory SQLite.")
+    db.connect(reuse_if_open=True)
 
     if CREATE_DB_TABLES:
         db.create_tables([Repo, Committer, CommitterStatsPerRepo, Requests, CommitsPerRepoPerAuthor])

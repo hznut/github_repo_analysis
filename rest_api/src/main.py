@@ -50,11 +50,10 @@ async def get_analysis(request: Request,
     Single endpoint which gives back the analysis for a repo. If it's the analysis is not available then kicks it off
     so that upon successive retries it'll eventually return the analysis. So instead of calling POST /analyze followed
     by multiple calls to GET /analysis/{request_id}, just keep calling this endpoint i.e. GET /analysis?{repo_url}
-    Note: this endpoint doesn't deal with any request_id.
 
     :param request:
     :param repo_url: Query parameter
-    :return: The analysis of the repo. This is same as what is returned by GET /analysis/{request_id} endpoint.
+    :return: The analysis of the repo.
     """
     try:
         result = repo_analyzer.get_analysis_by_repo_url(repo_url)
@@ -69,49 +68,6 @@ async def get_analysis(request: Request,
         logger.error(sys.exc_info(), ex)
         logger.error(traceback.print_stack())
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-@router.post("/analyze")
-async def analyze(req: CommitterAnalysisRequest) -> CommitterAnalysisRequestAck:
-    """
-    Submit request for analyzing a github repo.
-    :param req: Body containing the github repo's url.
-    :return: Returns a UUID i.e. request id and a url with which result can be retrieved.
-    """
-    request_id = await analyze_repo(req.repo_url)
-    status_url = f"{BASE_PATH}/analysis/{str(request_id)}"
-    ack = CommitterAnalysisRequestAck(request_id=str(request_id), status_url=status_url)
-    return ack
-
-
-@router.get("/analysis/{request_id}")
-def get_analysis(request: Request,
-                 request_id: str = Path(None,
-                                        description='Original request id (v4 UUID) sent with analyze request.')
-                 ) -> RepoAnalysisResult:
-    """
-    Checks and retrieves the result for your request.
-    :param request:
-    :param request_id: The UUID received upon submitting the POST analyze request.
-    :return:
-    """
-    try:
-        UUID(request_id, version=4)
-    except Exception:
-        message = f"request_id {request_id} is not a v4 UUID."
-        logger.error(message)
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message)
-
-    try:
-        result = repo_analyzer.get_analysis_by_request_id(request_id)
-    except Exception as ex:
-        logger.error(sys.exc_info(), ex)
-        logger.error(traceback.print_stack())
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    if result is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return result
 
 
 app.include_router(router, prefix=BASE_PATH)
