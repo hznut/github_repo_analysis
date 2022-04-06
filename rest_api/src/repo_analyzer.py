@@ -1,4 +1,5 @@
 from github3 import login, GitHub
+import github3
 from git import Repo, Commit, RefLog
 from git.cmd import Git
 import os
@@ -7,13 +8,15 @@ import asyncio
 from typing import List, Tuple, Dict, Optional, Any
 from threading import Lock
 from pprint import pprint, pformat, PrettyPrinter
-from config import log_format, log_level, CHECKOUT_ROOT_DIR
+from config import log_format, log_level, CHECKOUT_ROOT_DIR, REPO_URL_REGEX
 import logging
 import re
 from models import RepoAnalysisResult, CommitterLoc, RepoAnalysisRequest, StatusEnum
 import dao
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import sys
+from exceptions import RepoNotFoundException, AppError
 
 
 logging.basicConfig(format=log_format)
@@ -24,7 +27,6 @@ pp = PrettyPrinter(sort_dicts=False)
 
 anon_gh = GitHub()
 histogram_lock = Lock()
-REPO_URL_REGEX = 'https://github.com/(.*)/(.*)'
 queue = asyncio.Queue[RepoAnalysisRequest]()
 
 
@@ -39,6 +41,18 @@ def extract_owner_repo(repo_url: str) -> (str, str):
     groups = re.match(REPO_URL_REGEX, repo_url).groups()
     assert len(groups) == 2
     return groups[0], groups[1]
+
+
+def repo_exists(repo_url: str) -> bool:
+    owner, repo_name = extract_owner_repo(repo_url)
+    try:
+        return anon_gh.repository(owner, repo_name) is not None
+    except github3.exceptions.NotFoundError as ex:
+        return False
+    except Exception as ex:
+        message = f"Unable to determine if repo {repo_url} exists on github.com"
+        logger.error(message, ex)
+        raise AppError(message)
 
 
 async def blame_file(repo: Repo, file: str, histogram: Dict[str, int]) -> None:
@@ -142,10 +156,13 @@ def get_analysis_by_request_id(request_id: str) -> Optional[RepoAnalysisResult]:
 
 
 def get_analysis_by_repo_url(repo_url: str) -> Optional[RepoAnalysisResult]:
-    repo, _ = dao.Repo.get_or_create(repo_url=repo_url)
-    if repo is None:
-        return None
-    return get_analysis_by_repo(repo)
+    if repo_exists(repo_url):
+        repo, _ = dao.Repo.get_or_create(repo_url=repo_url)
+        if repo is None:
+            return None
+        return get_analysis_by_repo(repo)
+    else:
+        raise RepoNotFoundException(f"Couldn't find {repo_url} on github.com")
 
 
 async def extract_loc_stats(repo_url: str, repo: Repo, files: List[str]) -> None:
@@ -164,7 +181,12 @@ async def analyze_repo(repo_url: str) -> None:
     owner, repo_name = extract_owner_repo(repo_url)
     checkout_dir = os.path.join(CHECKOUT_ROOT_DIR, owner, repo_name)
     if not os.path.isdir(checkout_dir):
-        repo = Repo.clone_from(url=f"{repo_url}.git", to_path=checkout_dir)
+        try:
+            repo = Repo.clone_from(url=f"{repo_url}.git", to_path=checkout_dir)
+        except Exception as ex:
+            logger.error(sys.exc_info())
+            logger.error(f"git clone failed!", ex)
+            raise ex
         logger.info(f"Checked out {repo_url} to {checkout_dir}")
     else:
         repo = Repo(path=f"{checkout_dir}/.git")

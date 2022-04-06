@@ -12,6 +12,7 @@ fastapi = "*"
 mangum = "*"
 peewee = "*"
 pymysql = "*"
+mariadb = "1.0.10"
 
 [dev-packages]
 docker = "5.0.0"

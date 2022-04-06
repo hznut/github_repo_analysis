@@ -11,7 +11,7 @@ infra_venv:
 	cd infrastructure; test -d .venv || pipenv install; cd -
 
 tests: api_venv
-	pushd rest_api;source ./.venv/bin/activate && pytest; popd
+	pushd rest_api;source ./.venv/bin/activate && docker build -t repo-analysis-rest-api . && pytest --tb=short; popd
 
 run:
 	. ./run.sh && run_api

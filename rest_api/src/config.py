@@ -1,15 +1,23 @@
 import logging
 from starlette.config import Config
-from enum import Enum
+from enum import Enum, auto
 
 
 class EnvironmentEnum(str, Enum):
-    default = "default"
-    local = "local"
-    dev = "dev"
-    test = "tests"
-    preprod = "preprod"
-    prod = "prod"
+    default = auto()
+    local = auto()
+    dev = auto()
+    test = auto()
+    preprod = auto()
+    prod = auto()
+
+
+class DbTypeEnum(Enum):
+    def _generate_next_value_(name, start, count, last_values):
+        return name
+
+    mariadb = auto()
+    sqlite = auto()
 
 
 config = Config(".env")
@@ -40,5 +48,7 @@ DB_HOST = config("DB_HOST", default="localhost")
 DB_PORT = int(config("DB_PORT", cast=int, default=3306))
 DB_USERNAME = config("DB_USERNAME", default="root")
 DB_PASSWORD = config("DB_PASSWORD", default="example")
-DB_TYPE = config("DB_TYPE", default="sqlite")
+DB_TYPE = config("DB_TYPE", default=DbTypeEnum.sqlite.name)
+print(f"config: DB_TYPE={DB_TYPE}")
 CREATE_DB_TABLES = config("CREATE_DB_TABLES", cast=bool, default=False)
+REPO_URL_REGEX = 'https://github.com/(.*)/(.*)'

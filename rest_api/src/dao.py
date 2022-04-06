@@ -1,4 +1,4 @@
-from config import log_format, log_level
+from config import log_format, log_level, DbTypeEnum
 import logging
 from peewee import *
 from config import DB_NAME, DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_TYPE, CREATE_DB_TABLES
@@ -9,6 +9,7 @@ from datetime import datetime
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
 from git import Repo, Commit
+from playhouse.mysql_ext import MariaDBConnectorDatabase
 
 
 logging.basicConfig(format=log_format)
@@ -17,7 +18,7 @@ logger.setLevel(log_level)
 
 logger.info(f"{DB_TYPE} {DB_HOST} {DB_PORT} {DB_NAME} {DB_USERNAME}")
 
-if DB_TYPE == "mariadb":
+if DB_TYPE == DbTypeEnum.mariadb.name:
     db = MySQLDatabase(None)
 else:
     db = SqliteDatabase(':memory:')
@@ -152,7 +153,6 @@ def update_commit_feq_facts_status_for_repo(repo: Repo, status: StatusEnum):
         (repo.commit_feq_facts_status == StatusEnum.in_progress.name and status.name in (
             StatusEnum.done.name, StatusEnum.failed.name))):
         repo.update({Repo.commit_feq_facts_status: status.name}).execute()
-        # update_repo_status(repo)
         update_repo_status_by_url(repo.repo_url)
 
 
@@ -167,7 +167,6 @@ def update_loc_facts_status_for_repo(repo: Repo, status: StatusEnum):
         (repo.loc_facts_status == StatusEnum.in_progress.name and status.name in (
             StatusEnum.done.name, StatusEnum.failed.name))):
         repo.update({Repo.loc_facts_status: status.name}).execute()
-        # update_repo_status(repo)
         update_repo_status_by_url(repo.repo_url)
 
 
@@ -213,7 +212,7 @@ def calc_commit_freq_analysis_for_repo(repo: Repo) -> None:
         logger.debug(f"calc_commit_freq_analysis_for_repo: query={query}")
         for r in query:
             committer = get_committer(r['email'])
-            if DB_TYPE == "mariadb":
+            if DB_TYPE == DbTypeEnum.mariadb.name:
                 committer_stat = (CommitterStatsPerRepo.select().join(Repo).switch(CommitterStatsPerRepo)
                                   .join(Committer).where(Repo.id == repo.id and Committer.id == committer.id).get())
                 committer_stat.consistency_score = r['consistency_score']
@@ -328,7 +327,7 @@ def extract_commit_freq_stats(repo_url: str, repo: Repo, commits: List[Commit]) 
                     hours_since_last_commit = round((commit_date - prev_commit_date).seconds / 3600)
 
                     # logger.debug(f"extract_commit_freq_stats: {commit.commit_id} calculated hours_since_last_commit={hours_since_last_commit} commit_date={commit_date} type={type(commit.commit_date)} prev_commit_date={prev_commit_date} diff={(commit_date - prev_commit_date).seconds}")
-                    if DB_TYPE == "mariadb":
+                    if DB_TYPE == DbTypeEnum.mariadb.name:
                         commit.hours_since_last_commit = hours_since_last_commit
                         commit.save()  # Works for MariaDB but not for SQLite!
                     else:
@@ -355,7 +354,7 @@ def extract_commit_freq_stats(repo_url: str, repo: Repo, commits: List[Commit]) 
 
 
 def init_dao():
-    if DB_TYPE == "mariadb":
+    if DB_TYPE == DbTypeEnum.mariadb.name:
         db.init(DB_NAME, host=DB_HOST, port=DB_PORT, user=DB_USERNAME, password=DB_PASSWORD)
         logger.info(f"Initiated connection to MariaDB.")
     else:
@@ -364,6 +363,7 @@ def init_dao():
 
     if CREATE_DB_TABLES:
         db.create_tables([Repo, Committer, CommitterStatsPerRepo, Requests, CommitsPerRepoPerAuthor])
+        logger.info(f"DB tables created.")
 
     logger.info(f"DB connection {'closed' if db.is_closed() else 'open'}.")
 

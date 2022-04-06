@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, Request, Query, Path, HTTPException, status, Query
-from config import log_format, log_level, BASE_PATH
+from config import log_format, log_level, BASE_PATH, REPO_URL_REGEX
 from mangum import Mangum
 from models import RepoAnalysisResult, CommitterAnalysisRequest, CommitterAnalysisRequestAck, StatusEnum
 import repo_analyzer
@@ -9,7 +9,7 @@ import logging
 import sys
 import traceback
 from typing import Any, List
-import asyncio
+from exceptions import RepoNotFoundException, AppError
 
 logging.basicConfig(format=log_format)
 logger = logging.getLogger("main")
@@ -43,7 +43,8 @@ async def analyze_repo(repo_url: str) -> UUID:
 async def get_analysis(request: Request,
                        repo_url: str = Query(None,
                                              description='Github repo url of the format '
-                                                         'https://github.com/<owner>/<repo> without the .git suffix.')
+                                                         'https://github.com/<owner>/<repo> without the .git suffix.',
+                                             regex=REPO_URL_REGEX),
                        ) -> RepoAnalysisResult:
     """
     Single endpoint which gives back the analysis for a repo. If it's the analysis is not available then kicks it off
@@ -57,13 +58,17 @@ async def get_analysis(request: Request,
     """
     try:
         result = repo_analyzer.get_analysis_by_repo_url(repo_url)
+        if result is None or result.status == StatusEnum.todo.name:
+            await analyze_repo(repo_url)
+        return result
+    except RepoNotFoundException as ex:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ex.error_message)
+    except AppError as ex:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=ex.error_message)
     except Exception as ex:
         logger.error(sys.exc_info(), ex)
         logger.error(traceback.print_stack())
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    if result is None or result.status == StatusEnum.todo.name:
-        await analyze_repo(repo_url)
-    return result
 
 
 @router.post("/analyze")

@@ -105,4 +105,7 @@ that can even give some loose idea about:
   of an in-memory data structure.
 7. *Code refactoring* to break it further into more classes. More modularization and 
    organization needed.
-8. Add support for multiple environments like `dev`, `qa`, `pre-prod`, `prod`.   
+8. Add support for multiple environments like `dev`, `qa`, `pre-prod`, `prod`.
+9. Try to use Github REST APIs instead of git commands so that don't need to 
+   checkout the repo. However that'll work for only github repos whereas the
+   current implementation can be adapted for enterprise use as well.
