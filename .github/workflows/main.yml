@@ -28,13 +28,12 @@ jobs:
       # Runs a single command using the runners shell
       - name: tests
         run: |
-          sudo -s
           python --version
           pip --version
           python3 -m pip install --upgrade pip
-          apt-get update -y
-          apt-get install -y libmariadb-dev
+          sudo apt-get update -y
+          sudo apt-get install -y libmariadb-dev
           pip install mariadb
           pip install pipenv
           export PIPENV_VENV_IN_PROJECT=1
-          make tests
+          sudo make tests
