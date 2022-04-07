@@ -9,7 +9,7 @@ import logging
 import sys
 import traceback
 from typing import Any, List
-from exceptions import RepoNotFoundException, AppError
+from exceptions import RepoNotFoundException, AppError, GithubUnreachableException
 
 logging.basicConfig(format=log_format)
 logger = logging.getLogger("main")
@@ -61,9 +61,14 @@ async def get_analysis(request: Request,
             await analyze_repo(repo_url)
         return result
     except RepoNotFoundException as ex:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ex.error_message)
+        message = f"{repo_url} doesn't look like a valid github.com repo."
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=message)
+    except GithubUnreachableException as ex:
+        message = f"Having problem reaching {repo_url}. Retry after about a minute."
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=message)
     except AppError as ex:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=ex.error_message)
+        message = "Something blew up internally. Retry after some time. If the error persists then someone needs to look into it."
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=message)
     except Exception as ex:
         logger.error(sys.exc_info(), ex)
         logger.error(traceback.print_stack())

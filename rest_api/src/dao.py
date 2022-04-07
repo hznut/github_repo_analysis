@@ -147,32 +147,38 @@ def update_repo_status_by_url(repo_url: str):
     update_repo_status(repo)
 
 
-def update_commit_feq_facts_status_for_repo(repo: Repo, status: StatusEnum):
+def update_commit_feq_facts_status_for_repo(repo: Repo, status: StatusEnum) -> bool:
     if ((repo.commit_feq_facts_status == StatusEnum.todo.name and status.name in (
             StatusEnum.in_progress.name, StatusEnum.done.name, StatusEnum.failed.name)) or
         (repo.commit_feq_facts_status == StatusEnum.in_progress.name and status.name in (
             StatusEnum.done.name, StatusEnum.failed.name))):
         repo.update({Repo.commit_feq_facts_status: status.name}).execute()
         update_repo_status_by_url(repo.repo_url)
+        return True
+    else:
+        return False
 
 
-def update_commit_feq_facts_status_for_repo_url(repo_url: str, status: StatusEnum):
+def update_commit_feq_facts_status_for_repo_url(repo_url: str, status: StatusEnum) -> bool:
     repo = get_repo_by_url(repo_url)
-    update_loc_facts_status_for_repo(repo, status)
+    return update_commit_feq_facts_status_for_repo(repo, status)
 
 
-def update_loc_facts_status_for_repo(repo: Repo, status: StatusEnum):
+def update_loc_facts_status_for_repo(repo: Repo, status: StatusEnum) -> bool:
     if ((repo.loc_facts_status == StatusEnum.todo.name and status.name in (
             StatusEnum.in_progress.name, StatusEnum.done.name, StatusEnum.failed.name)) or
         (repo.loc_facts_status == StatusEnum.in_progress.name and status.name in (
             StatusEnum.done.name, StatusEnum.failed.name))):
         repo.update({Repo.loc_facts_status: status.name}).execute()
         update_repo_status_by_url(repo.repo_url)
+        return True
+    else:
+        return False
 
 
-def update_loc_facts_status_for_repo_url(repo_url: str, status: StatusEnum):
+def update_loc_facts_status_for_repo_url(repo_url: str, status: StatusEnum) -> bool:
     repo = get_repo_by_url(repo_url)
-    update_commit_feq_facts_status_for_repo(repo, status)
+    return update_loc_facts_status_for_repo(repo, status)
 
 
 def save_loc_data_for_repo(repo_url: str, histogram: Dict[str, int]):

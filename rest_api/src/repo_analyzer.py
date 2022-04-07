@@ -16,7 +16,7 @@ import dao
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import sys
-from exceptions import RepoNotFoundException, AppError
+from exceptions import RepoNotFoundException, AppError, GithubUnreachableException, GitCommandFailedException
 
 
 logging.basicConfig(format=log_format)
@@ -51,10 +51,12 @@ def repo_exists_on_github(repo_url: str) -> bool:
         return repo is not None
     except github3.exceptions.NotFoundError as ex:
         return False
+    except github3.exceptions.ConnectionError as ex:
+        raise GithubUnreachableException(ex.msg) from ex
     except Exception as ex:
         message = f"Unable to determine if repo {repo_url} exists on github.com"
         logger.error(message, ex)
-        raise AppError(message)
+        raise AppError(message) from ex
 
 
 async def blame_file(repo: Repo, file: str, histogram: Dict[str, int]) -> None:
@@ -173,38 +175,50 @@ async def extract_loc_stats(repo_url: str, repo: Repo, files: List[str]) -> None
 
 
 def extract_comit_freq_stats(repo_url: str, repo: Repo, files: List[str]) -> None:
+    """
+    Does something like: git log and then groups commits by committers to do further analysis.
+    Note: Since we are doing these for github.com repos, behind the scenes github.com APIs get called.
+          Throttling from Github.com APIs is very common and probable.
+    :param repo_url:
+    :param repo:
+    :param files:
+    :return:
+    """
     one_yr_ago = (datetime.now() - relativedelta(years=1)).strftime("%Y-%m-%d")
     commits = Commit.iter_items(repo=repo, rev=repo.head, since=one_yr_ago)
     dao.extract_commit_freq_stats(repo_url, repo, commits)
 
 
 async def analyze_repo(repo_url: str) -> None:
-    dao.update_loc_facts_status_for_repo_url(repo_url, StatusEnum.in_progress)
-    dao.update_commit_feq_facts_status_for_repo_url(repo_url, StatusEnum.in_progress)
-    owner, repo_name = extract_owner_repo(repo_url)
-    checkout_dir = os.path.join(CHECKOUT_ROOT_DIR, owner, repo_name)
-    if not os.path.isdir(checkout_dir):
-        try:
-            repo = Repo.clone_from(url=f"{repo_url}.git", to_path=checkout_dir)
-        except Exception as ex:
-            logger.error(sys.exc_info())
-            logger.error(f"git clone failed!", ex)
-            raise ex
-        logger.info(f"Checked out {repo_url} to {checkout_dir}")
-    else:
-        repo = Repo(path=f"{checkout_dir}/.git")
+    continue_loc_analysis = dao.update_loc_facts_status_for_repo_url(repo_url, StatusEnum.in_progress)
+    continue_freq_analysis = dao.update_commit_feq_facts_status_for_repo_url(repo_url, StatusEnum.in_progress)
+    if continue_loc_analysis or continue_freq_analysis:
+        owner, repo_name = extract_owner_repo(repo_url)
+        checkout_dir = os.path.join(CHECKOUT_ROOT_DIR, owner, repo_name)
+        if not os.path.isdir(checkout_dir):
+            try:
+                repo = Repo.clone_from(url=f"{repo_url}.git", to_path=checkout_dir)
+            except Exception as ex:
+                logger.error(sys.exc_info())
+                logger.error(f"git clone failed!", ex)
+                raise GitCommandFailedException("git clone") from ex
+            logger.info(f"Checked out {repo_url} to {checkout_dir}")
+        else:
+            repo = Repo(path=f"{checkout_dir}/.git")
 
-    local_git_working_dir = Git(working_dir=checkout_dir)
-    files_str: str = local_git_working_dir.ls_files()
-    if files_str:
-        files = files_str.split('\n')
-        logger.info(f"{len(files)} files to analyze..")
-        await extract_loc_stats(repo_url, repo, files)
-        extract_comit_freq_stats(repo_url, repo, files)
-    shutil.rmtree(checkout_dir)
-    if os.path.isdir(checkout_dir):
-        os.rmdir(path=checkout_dir)
-    logger.debug(f"Deleted {checkout_dir}")
+        local_git_working_dir = Git(working_dir=checkout_dir)
+        files_str: str = local_git_working_dir.ls_files()
+        if files_str:
+            files = files_str.split('\n')
+            logger.info(f"{len(files)} files to analyze..")
+            if continue_loc_analysis:
+                await extract_loc_stats(repo_url, repo, files)
+            if continue_freq_analysis:
+                extract_comit_freq_stats(repo_url, repo, files)
+        shutil.rmtree(checkout_dir)
+        if os.path.isdir(checkout_dir):
+            os.rmdir(path=checkout_dir)
+        logger.debug(f"Deleted {checkout_dir}")
 
 
 async def process_requests():
