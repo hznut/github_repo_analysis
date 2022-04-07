@@ -30,6 +30,6 @@ jobs:
         run: |
           python --version
           pip --version
+          sudo python3 -m pip install --upgrade pip
           sudo pip install pipenv
-          sudo pip3 install pipenv
           make tests
