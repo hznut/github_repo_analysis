@@ -37,4 +37,5 @@ jobs:
           sudo pip install mariadb
           sudo pip install pipenv
           echo $SHELL
-          sudo chsh -s /bin/bash PIPENV_VENV_IN_PROJECT=1 make tests
+          sudo chsh -s /bin/bash
+          sudo PIPENV_VENV_IN_PROJECT=1 make tests
