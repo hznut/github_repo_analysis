@@ -10,15 +10,19 @@ local_api: api_venv local_db
 infra_venv:
 	cd infrastructure; test -d .venv || pipenv install; cd -
 
-tests: api_venv
-	cd rest_api; . ./.venv/bin/activate && docker build -t repo-analysis-rest-api . && pytest --tb=short; cd -
+build: api_venv
+	cd rest_api; . ./.venv/bin/activate && docker build -t repo-analysis-rest-api . ; cd -
+
+tests: build
+	cd rest_api; . ./.venv/bin/activate && pytest --tb=short; cd -
 
 run:
-	. ./run.sh && run_api
+	ls -la
+	source ./run.sh && run_api && docker ps -a | grep repo-analysis
 
 logs:
-	. ./run.sh && api_logs
+	source ./run.sh && api_logs
 
 stop:
-	. ./run.sh && cleanup
+	source ./run.sh && cleanup
 
