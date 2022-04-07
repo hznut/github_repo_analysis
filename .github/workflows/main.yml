@@ -36,4 +36,4 @@ jobs:
           pip install mariadb
           pip install pipenv
           export PIPENV_VENV_IN_PROJECT=1
-          sudo make tests
+          sudo PIPENV_VENV_IN_PROJECT=1 make tests
