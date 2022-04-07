@@ -6,7 +6,7 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [ * ]
   pull_request:
     branches: [ main ]
 
@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
-      - name: build
+      - name: tests
         run: |
           python --version
           pip --version
@@ -35,5 +35,5 @@ jobs:
           sudo apt-get install -y libmariadb-dev
           sudo pip install mariadb
           sudo pip install pipenv
-          sudo bash
-          sudo PIPENV_VENV_IN_PROJECT=1 make tests
+          echo $SHELL
+          sudo chsh -s /bin/bash PIPENV_VENV_IN_PROJECT=1 make tests
