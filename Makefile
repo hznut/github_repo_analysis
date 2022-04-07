@@ -17,12 +17,11 @@ tests: build
 	cd rest_api; . ./.venv/bin/activate && pytest --tb=short; cd -
 
 run:
-	ls -la
-	source ./run.sh && run_api && docker ps -a | grep repo-analysis
+	. ./run.sh && run_api && docker ps -a | grep repo-analysis
 
 logs:
-	source ./run.sh && api_logs
+	. ./run.sh && api_logs
 
 stop:
-	source ./run.sh && cleanup
+	. ./run.sh && cleanup
 
