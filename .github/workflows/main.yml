@@ -30,10 +30,9 @@ jobs:
         run: |
           python --version
           pip --version
-          python3 -m pip install --upgrade pip
+          sudo python3 -m pip install --upgrade pip
           sudo apt-get update -y
           sudo apt-get install -y libmariadb-dev
-          pip install mariadb
-          pip install pipenv
-          export PIPENV_VENV_IN_PROJECT=1
+          sudo pip install mariadb
+          sudo pip install pipenv
           sudo PIPENV_VENV_IN_PROJECT=1 make tests
