@@ -31,5 +31,8 @@ jobs:
           python --version
           pip --version
           sudo python3 -m pip install --upgrade pip
+          sudo apt-get update -y
+          sudo apt-get install -y libmariadb-dev
+          pip install mariadb
           sudo pip install pipenv
           make tests
