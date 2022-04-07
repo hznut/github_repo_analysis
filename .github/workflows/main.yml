@@ -35,4 +35,6 @@ jobs:
           sudo apt-get install -y libmariadb-dev
           pip install mariadb
           sudo pip install pipenv
+          pwd
+          ls -la ./.venv/bin/activate
           make tests
