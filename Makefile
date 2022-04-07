@@ -1,5 +1,5 @@
 api_venv:
-	cd rest_api; test -d .venv || pipenv install --dev; pipenv update --dev; cd -
+	cd rest_api; test -d .venv || pipenv install --dev; pipenv update --dev; ls -al ./; cd -
 
 local_db:
 	echo 'Local DB started.'
