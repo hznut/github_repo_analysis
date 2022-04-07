@@ -28,8 +28,12 @@ jobs:
       # Runs a single command using the runners shell
       - name: tests
         run: |
-          sudo sudo apt install software-properties-common python-software-properties
-          sudo add-apt-repository ppa:pypa/ppa
-          sudo apt update
-          sudo apt install pipenv
+#          sudo sudo apt install software-properties-common python-software-properties
+#          sudo add-apt-repository ppa:pypa/ppa
+#          sudo apt update
+#          sudo apt install pipenv
+          python --version
+          pip --version
+          sudo pip install pipenv
+          sudo pip3 install pipenv
           make tests
