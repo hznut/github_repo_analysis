@@ -1,3 +1,5 @@
+![Tests](https://github.com/Himanshu-Dreamteam/github_repo_analysis/actions/workflows/main.yml/badge.svg)
+
 # committer-classification
 Copyright (C) 2022 Himanshu Vijay
 

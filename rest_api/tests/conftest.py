@@ -132,7 +132,7 @@ def api_base_path(setup):
     # statements). Hence it's important to supply thee following as a fixture rather than importing it directly in the
     # tests. In other words we don't want to put these imports directly in the tests files.
     from config import BASE_PATH
-    return f"http://localhost:80/{BASE_PATH}"
+    return f"http://localhost:80{BASE_PATH}"
 
 
 @pytest.fixture(scope="module")
