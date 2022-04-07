@@ -1,17 +1,17 @@
 api_venv:
-	pushd rest_api; test -d .venv || pipenv install --dev; pipenv update --dev; popd
+	cd rest_api; test -d .venv || pipenv install --dev; pipenv update --dev; cd -
 
 local_db:
 	echo 'Local DB started.'
 
 local_api: api_venv local_db
-	pushd rest_api;source ./.venv/bin/activate && uvicorn main:app --reload --app-dir src; popd
+	cd rest_api;source ./.venv/bin/activate && uvicorn main:app --reload --app-dir src; cd -
 
 infra_venv:
 	cd infrastructure; test -d .venv || pipenv install; cd -
 
 tests: api_venv
-	pushd rest_api;source ./.venv/bin/activate && docker build -t repo-analysis-rest-api . && pytest --tb=short; popd
+	cd rest_api;source ./.venv/bin/activate && docker build -t repo-analysis-rest-api . && pytest --tb=short; cd -
 
 run:
 	. ./run.sh && run_api
