@@ -35,4 +35,5 @@ jobs:
           sudo apt-get install -y libmariadb-dev
           pip install mariadb
           pip install pipenv
+          export PIPENV_VENV_IN_PROJECT=1
           make tests
