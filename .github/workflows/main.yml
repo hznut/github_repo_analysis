@@ -29,9 +29,15 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: '3.9.10'
+      - name: Install docker compose V2
+        run: |
+          DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+          mkdir -p $DOCKER_CONFIG/cli-plugins
+          curl -SL https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+          chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+          docker compose version
       - name: Install pre-requisites
         run: |
-          set -o | grep posix
           python --version
           which python
           pip --version

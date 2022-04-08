@@ -13,7 +13,7 @@ for any given github.com repo.
 * Docker
 * Docker compose if not installed: 
   * check: `docker compose --help`
-  * https://docs.docker.com/compose/install/
+  * https://docs.docker.com/compose/cli-command/
 
 ### Running locally
 * Ports 80, 8888, 8080 need to be free. 
