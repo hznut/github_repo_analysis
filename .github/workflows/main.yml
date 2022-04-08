@@ -45,6 +45,7 @@ jobs:
           pip install --upgrade pip
           sudo apt-get update -y
           sudo apt-get install -y libmariadb-dev
+          sudo apt-get install libmariadb3
           command -v pipenv &> /dev/null || pip install pipenv
           pip install mariadb
       - name: Run tests
