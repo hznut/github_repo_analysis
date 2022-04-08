@@ -19,7 +19,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -34,7 +34,7 @@ jobs:
           which make
           DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
           mkdir -p $DOCKER_CONFIG/cli-plugins
-          curl -SL https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+          curl -SL https://github.com/docker/compose/releases/download/v2.4.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
           chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
           docker compose version
       - name: Install pre-requisites

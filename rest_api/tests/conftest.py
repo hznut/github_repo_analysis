@@ -60,7 +60,7 @@ def docker_compose_up():
         print("Containers already running.")
     else:
         pwd = os.path.dirname(os.path.realpath(__file__))
-        process = subprocess.run(["make", "run"], cwd=f"{pwd}/../..", shell=True, executable='/bin/bash')
+        process = subprocess.run(shlex.split("make run"), cwd=f"{pwd}/../..")
         print(process)
         if process.returncode != 0:
             raise RuntimeError("Couldn't launch containers for DB and REST API!")
@@ -68,7 +68,7 @@ def docker_compose_up():
 
 def docker_compose_down():
     pwd = os.path.dirname(os.path.realpath(__file__))
-    process = subprocess.run(shlex.split("make stop"), cwd=f"{pwd}/../..", executable='/bin/bash')
+    process = subprocess.run(shlex.split("make stop"), cwd=f"{pwd}/../..")
     print(process)
 
 
