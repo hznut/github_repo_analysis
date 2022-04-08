@@ -54,7 +54,7 @@ def next_free_port(start_port=1024, max_port=65535):
 @pytest.fixture(scope="session", autouse=True)
 def docker_compose_up():
     # docker compose ls | grep github_repo_analysis
-    compose_ls = subprocess.Popen(shlex.split("docker-compose ls"), stdout=subprocess.PIPE, executable='/bin/bash')
+    compose_ls = subprocess.Popen(shlex.split("docker compose ls"), stdout=subprocess.PIPE, executable='/bin/bash')
     grep = subprocess.run(shlex.split("grep github_repo_analysis"), stdin=compose_ls.stdout, executable='/bin/bash')
     if grep.returncode == 0:  # already running
         print("Containers already running.")
