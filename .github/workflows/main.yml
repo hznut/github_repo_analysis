@@ -46,5 +46,6 @@ jobs:
           pip --version
           pip install --upgrade pip
           command -v pipenv &> /dev/null || pipx install pipenv
-          which docker
+          command -v docker &> /dev/null || brew install docker
+          docker compose --help
           PIPENV_VENV_IN_PROJECT=1 make tests
