@@ -35,7 +35,13 @@ jobs:
         run: |
           command -v python3 &> /dev/null || brew install python
           python --version
+          which python
           python3 --version
+          which python3
+          command -v pyenv &> /dev/null || brew install pyenv
+          pyenv global 3.9.10
+          python --version
+          which python
           pip --version
           pip install --upgrade pip
           command -v pipenv &> /dev/null || pip install pipenv
