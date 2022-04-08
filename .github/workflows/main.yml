@@ -33,10 +33,13 @@ jobs:
       # pip install pipenv
       - name: tests
         run: |
+          echo $SHELL
           command -v pyenv &> /dev/null || brew install pyenv
           pyenv install 3.9.10
           pyenv global 3.9.10
           pyenv init --path
+          echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.zshrc
+          echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
           python --version
           which python
           pip --version
