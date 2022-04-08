@@ -60,7 +60,7 @@ def docker_compose_up():
         print("Containers already running.")
     else:
         pwd = os.path.dirname(os.path.realpath(__file__))
-        process = subprocess.run(["make", "run"], cwd=f"{pwd}/../..", executable='/bin/bash')
+        process = subprocess.run(["make", "run"], cwd=f"{pwd}/../..", shell=True, executable='/bin/bash')
         print(process)
         if process.returncode != 0:
             raise RuntimeError("Couldn't launch containers for DB and REST API!")
