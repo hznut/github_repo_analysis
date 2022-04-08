@@ -33,14 +33,10 @@ jobs:
       # pip install pipenv
       - name: tests
         run: |
-          command -v python3 &> /dev/null || brew install python
-          python --version
-          which python
-          python3 --version
-          which python3
           command -v pyenv &> /dev/null || brew install pyenv
           pyenv install 3.9.10
           pyenv global 3.9.10
+          pyenv init --path
           python --version
           which python
           pip --version
