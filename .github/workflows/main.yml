@@ -33,7 +33,9 @@ jobs:
       # pip install pipenv
       - name: tests
         run: |
+          command -v python3 &> /dev/null || brew install python
           python --version
+          python3 --version
           pip --version
           pip install --upgrade pip
           command -v pipenv &> /dev/null || pip install pipenv
