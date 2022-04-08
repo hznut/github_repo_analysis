@@ -29,16 +29,6 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: '3.9.10'
-      # Runs a single command using the runners shell
-      # echo $SHELL
-      # command -v pyenv &> /dev/null || brew install pyenv
-      # pyenv install 3.9.10
-      # pyenv global 3.9.10
-      # pyenv init --path
-      # echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
-      # python --version
-      # which python
-      # pip --version
       - name: tests
         run: |
           python --version
@@ -47,5 +37,6 @@ jobs:
           pip install --upgrade pip
           command -v pipenv &> /dev/null || pipx install pipenv
           command -v docker &> /dev/null || brew install docker
+          pip install docker-compose
           docker compose --help
           PIPENV_VENV_IN_PROJECT=1 make tests
