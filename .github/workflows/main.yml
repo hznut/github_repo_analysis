@@ -29,7 +29,7 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: '3.9.10'
-      - name: tests
+      - name: Install pre-requisites
         run: |
           python --version
           which python
@@ -37,8 +37,12 @@ jobs:
           pip install --upgrade pip
           command -v pipenv &> /dev/null || pipx install pipenv
           command -v docker &> /dev/null || brew install docker
-          pip install docker-compose
+          brew install docker-compose
           docker compose --help
-          launchctl start com.docker.registry
+          brew install hyperkit
+          brew install minikube
+          minikube start
           brew install mariadb-connector-c
+      - name: Run tests
+        run: |
           PIPENV_VENV_IN_PROJECT=1 make tests
