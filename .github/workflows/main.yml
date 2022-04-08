@@ -39,5 +39,6 @@ jobs:
           command -v docker &> /dev/null || brew install docker
           pip install docker-compose
           docker compose --help
+          launchctl start com.docker.registry
           brew install mariadb-connector-c
           PIPENV_VENV_IN_PROJECT=1 make tests
