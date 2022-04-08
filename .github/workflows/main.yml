@@ -41,6 +41,9 @@ jobs:
       # pip --version
       - name: tests
         run: |
+          python --version
+          which python
+          pip --version
           pip install --upgrade pip
           command -v pipenv &> /dev/null || pip install pipenv
           which docker
