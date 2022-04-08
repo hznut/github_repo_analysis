@@ -24,7 +24,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
-      - name: tests
+      - name: Setup Python3
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
         uses: actions/setup-python@v3
         with:
@@ -39,6 +39,7 @@ jobs:
       # python --version
       # which python
       # pip --version
+      - name: tests
         run: |
           pip install --upgrade pip
           command -v pipenv &> /dev/null || pip install pipenv
