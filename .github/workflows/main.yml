@@ -39,7 +39,7 @@ jobs:
       # python --version
       # which python
       # pip --version
-      - run: |
+        run: |
           pip install --upgrade pip
           command -v pipenv &> /dev/null || pip install pipenv
           which docker
