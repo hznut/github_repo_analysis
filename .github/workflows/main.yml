@@ -19,7 +19,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -30,6 +30,7 @@ jobs:
         with:
           python-version: '3.9.10'
       - name: Install docker compose V2
+        shell: bash
         run: |
           which make
           DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
@@ -38,6 +39,7 @@ jobs:
           chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
           docker compose version
       - name: Install pre-requisites
+        shell: bash
         run: |
           python --version
           which python
@@ -49,5 +51,6 @@ jobs:
           command -v pipenv &> /dev/null || pip install pipenv
           pip install mariadb
       - name: Run tests
+        shell: bash
         run: |
           PIPENV_VENV_IN_PROJECT=1 make tests
