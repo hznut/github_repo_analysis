@@ -27,8 +27,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v3
-          with:
-            python-version: '3.9.10'
+        with:
+          python-version: '3.9.10'
 
       # Runs a single command using the runners shell
       # echo $SHELL
