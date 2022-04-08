@@ -19,7 +19,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: macos-11
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -27,13 +27,15 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
+      # sudo apt-get update -y
+      # sudo apt-get install -y libmariadb-dev
+      # pip install mariadb
+      # pip install pipenv
       - name: tests
         run: |
           python --version
           pip --version
-          sudo python3 -m pip install --upgrade pip
-          sudo apt-get update -y
-          sudo apt-get install -y libmariadb-dev
-          pip install mariadb
-          pip install pipenv
+          pip install --upgrade pip
+          command -v pipenv &> /dev/null || pip install pipenv
+          which docker
           PIPENV_VENV_IN_PROJECT=1 make tests
