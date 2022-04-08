@@ -34,8 +34,6 @@ jobs:
           sudo python3 -m pip install --upgrade pip
           sudo apt-get update -y
           sudo apt-get install -y libmariadb-dev
-          sudo pip install mariadb
-          sudo pip install pipenv
-          sudo chsh -s /bin/bash
-          sudo set +o posix
-          sudo PIPENV_VENV_IN_PROJECT=1 make tests
+          pip install mariadb
+          pip install pipenv
+          PIPENV_VENV_IN_PROJECT=1 make tests
