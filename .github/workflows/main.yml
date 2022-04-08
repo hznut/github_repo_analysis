@@ -39,6 +39,7 @@ jobs:
           python3 --version
           which python3
           command -v pyenv &> /dev/null || brew install pyenv
+          pyenv install 3.9.10
           pyenv global 3.9.10
           python --version
           which python
