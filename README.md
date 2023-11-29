@@ -75,15 +75,13 @@ until it returns data.
 
 ![repo_analysis_arch.jpg](docs/repo_analysis_arch.jpg)
 
-### Why I chose this project ?
-1. It sort of aligns with the Dreamteam product. Vision is to gather metrics
-that can even give some loose idea about: 
+### Possible extensions
+Vision is to gather metrics that can even give some loose idea about: 
    * Who's contributed most code (in production) to a project ?
    * Who commits more consistently and frequently ? (i.e. follows code commit best practices)
    * Whose PRs generally have less turn around time ? (Gives a hint of the same as above.)
    * Who's most active in discussions ? This may not be most code contributor!
-   * Who generally gives most constructive PR feedback/comments ?  
-2. It demonstrates my experience with writing REST APIs.
+   * Who generally gives most constructive PR feedback/comments ?
 
 ### Limitations
 1. Only analyzes last one year of commits.
